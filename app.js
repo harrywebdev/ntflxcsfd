@@ -7,15 +7,23 @@ app.get('/csfd/:search', async (req, res) => {
 
   try {
     const csfd = require('csfd-api');
-    const results = await csfd.search('matrix');
+    const slug = require('slug');
 
-    results.films.filter((f) => {
-      // TODO: find the matching one
+    const results = await csfd.search(search);
+
+    const matching = results.films.filter((f) => {
+      return slug(f.name) == slug(search);
     });
 
-    return res.json({ term: search, results });
-  } catch (e) {
+    if (matching.length) {
+      return res.json({ data: matching[0], meta: { term: search, found: matching.length } });
+    }
+
+    res.header('status', 404);
     return res.json({ error: e.message });
+  } catch (e) {
+    res.header('status', 500);
+    return res.json({ error: e.message, code: 500 });
   }
 });
 
