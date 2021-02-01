@@ -21,7 +21,7 @@ app.get('/csfd/search', async (req, res) => {
     const search = req.query.term;
 
     const JSONdb = require('simple-json-db');
-    const db = new JSONdb(path.join(__dirname, '/data/db'));
+    const db = new JSONdb(path.join(__dirname, '..', '/data/db'));
 
     if (db.has(search)) {
       return res.json(db.get(search));
@@ -59,7 +59,7 @@ app.get('/csfd/search', async (req, res) => {
 
 app.get('/csfd/js', (req, res) => {
   res.set('Content-Type', 'text/javascript');
-  const bookmarklet = fs.readFileSync('./browser_bookmarklet.js');
+  const bookmarklet = fs.readFileSync(path.join(__dirname, 'browser_bookmarklet.js'));
   res.send(bookmarklet);
 });
 
