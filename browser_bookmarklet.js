@@ -7,7 +7,10 @@ function ncInit(onload) {
 }
 
 function injectRating() {
-  console.log('ready');
+  var movies = $('.fallback-text');
+
+  // TODO: run through these, ask API with the .innerHTML as search term
+  // and amend the rating to .parent().parent() with some pos-a and high zidx
 }
 
 ncInit(injectRating);
