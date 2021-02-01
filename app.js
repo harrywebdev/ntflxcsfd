@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const port = 3000;
 
 async function validateApiKey(req, res, next) {
-  if (!req.query.api_key || req.query.api_key != '1234') {
+  if (!req.query.api_key || req.query.api_key != process.env.API_KEY) {
     return res.status(401).json({ error: 'forbidden' });
   }
 
