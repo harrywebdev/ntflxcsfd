@@ -15,9 +15,9 @@ async function validateApiKey(req, res, next) {
 
 app.use(validateApiKey);
 
-app.get('/csfd/:search', async (req, res) => {
+app.get('/csfd/search', async (req, res) => {
   try {
-    const search = req.params.search;
+    const search = req.query.term;
 
     const JSONdb = require('simple-json-db');
     const db = new JSONdb(path.join(__dirname, '/data/db'));
@@ -35,10 +35,15 @@ app.get('/csfd/:search', async (req, res) => {
       return slug(f.name) == slug(search);
     });
 
-    if (matching.length) {
-      const film = await csfd.film(matching[0].id);
+    const firstResult = matching.length ? matching[0] : results.films[0];
 
-      const result = { data: film, meta: { term: search, found: matching.length } };
+    if (firstResult) {
+      const film = await csfd.film(firstResult.id);
+
+      const result = {
+        data: film,
+        meta: { term: search, found: results.films.length, exact_match: matching.length == 1 },
+      };
 
       db.set(search, result);
 
