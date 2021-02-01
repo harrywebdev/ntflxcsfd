@@ -16,15 +16,22 @@ app.get('/csfd/:search', async (req, res) => {
     });
 
     if (matching.length) {
-      return res.json({ data: matching[0], meta: { term: search, found: matching.length } });
+      const film = await csfd.film(matching[0].id);
+
+      return res.json({ data: film, meta: { term: search, found: matching.length } });
     }
 
     res.header('status', 404);
-    return res.json({ error: e.message });
+    return res.json({ error: 'not found' });
   } catch (e) {
     res.header('status', 500);
     return res.json({ error: e.message, code: 500 });
   }
+});
+
+// error handler
+app.use(function (err, req, res, next) {
+  res.status(400).send(err.message);
 });
 
 app.listen(port, () => {
