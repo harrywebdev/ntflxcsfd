@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const path = require('path');
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -15,9 +16,16 @@ async function validateApiKey(req, res, next) {
 app.use(validateApiKey);
 
 app.get('/csfd/:search', async (req, res) => {
-  const search = req.params.search;
-
   try {
+    const search = req.params.search;
+
+    const JSONdb = require('simple-json-db');
+    const db = new JSONdb(path.join(__dirname, '/data/db'));
+
+    if (db.has(search)) {
+      return res.json(db.get(search));
+    }
+
     const csfd = require('csfd-api');
     const slug = require('slug');
 
@@ -30,7 +38,11 @@ app.get('/csfd/:search', async (req, res) => {
     if (matching.length) {
       const film = await csfd.film(matching[0].id);
 
-      return res.json({ data: film, meta: { term: search, found: matching.length } });
+      const result = { data: film, meta: { term: search, found: matching.length } };
+
+      db.set(search, result);
+
+      return res.json(result);
     }
 
     return res.status(404).json({ error: 'not found' });
