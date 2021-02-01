@@ -2,6 +2,16 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+async function validateApiKey(req, res, next) {
+  if (!req.query.api_key || req.query.api_key != '1234') {
+    return res.status(401).json({ error: 'forbidden' });
+  }
+
+  next();
+}
+
+app.use(validateApiKey);
+
 app.get('/csfd/:search', async (req, res) => {
   const search = req.params.search;
 
@@ -21,11 +31,9 @@ app.get('/csfd/:search', async (req, res) => {
       return res.json({ data: film, meta: { term: search, found: matching.length } });
     }
 
-    res.header('status', 404);
-    return res.json({ error: 'not found' });
+    return res.status(404).json({ error: 'not found' });
   } catch (e) {
-    res.header('status', 500);
-    return res.json({ error: e.message, code: 500 });
+    return res.status(500).json({ error: e.message, code: 500 });
   }
 });
 
