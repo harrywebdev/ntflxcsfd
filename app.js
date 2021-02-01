@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -54,6 +55,12 @@ app.get('/csfd/search', async (req, res) => {
   } catch (e) {
     return res.status(500).json({ error: e.message, code: 500 });
   }
+});
+
+app.get('/csfd/js', (req, res) => {
+  res.set('Content-Type', 'text/javascript');
+  const bookmarklet = fs.readFileSync('./browser_bookmarklet.js');
+  res.send(bookmarklet);
 });
 
 // error handler
