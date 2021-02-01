@@ -61,6 +61,6 @@ app.use(function (err, req, res, next) {
   res.status(400).send(err.message);
 });
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
